@@ -29,6 +29,11 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/ia_ransac.h>
+
+#include <pcl/filters/radius_outlier_removal.h>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/filters/extract_indices.h>
+
 #include <cstddef>
 #include <cstdint>
 
@@ -49,15 +54,8 @@
 
 #include <Eigen/Dense>
 
-
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
-
-#include <pcl/common/transforms.h>
-#include <pcl/filters/radius_outlier_removal.h>
-#include <pcl/segmentation/sac_segmentation.h>
-#include <pcl/filters/extract_indices.h>
 
 namespace Ui {
 class MainWindow;
@@ -73,9 +71,20 @@ public:
 
 private slots:
 
-
-
+    /****************** Spin boxes value changed **********************/
     void on_Outlier_spinBox_valueChanged(int arg1);
+
+    void on_num_frames_spinBox_valueChanged(int arg1);
+
+    void on_thresholdSpinBox_min_editingFinished();
+
+    void on_thresholdSpinBox_max_editingFinished();
+
+    void on_FrameRate_spinBox_valueChanged(int arg1);
+
+    /******************************************************************/
+
+    /******************** BUTTONS *************************************/
 
     void on_PbtnLoad_clicked();
 
@@ -83,36 +92,49 @@ private slots:
 
     void on_PbtnNewScan_clicked();
 
-    void on_FrameRate_spinBox_valueChanged(int arg1);
 
     void on_PbtnSeePointCloud_clicked();
 
     void on_PbtnSeeFullPointCloud_clicked();
 
+   /*******************************************************************/
 
+    //Selecting  an element of the list will show the feature matching between
+    //This image and the next one
     void on_listWidget_itemSelectionChanged();
 
-    void on_num_frames_spinBox_valueChanged(int arg1);
-
-
-
+    //Select if ICP will be used
     void on_icp_checkBox_clicked(bool checked);
 
+    //Select if SVD will be used (feature match approach)
     void on_svd_checkBox_clicked(bool checked);
 
-    void on_thresholdSpinBox_min_editingFinished();
 
-    void on_thresholdSpinBox_max_editingFinished();
 
 private:
-    //Making code clearer
+    //Making code clearer. This functions use class variables and are must made to make code more clear
+
+    //Load files from a QT file selector and save color and depth images on arrays that will be used later
     void loadFiles();
+
+    //Threshold all depth images and remove borders (where most of the outlier appear)
     void threshold_and_outlier_removal();
+
+    //Create PointClouds separately for all the depth+color images
     void createPC();
+
+    //Compute feature matching for each consecutive pair of color+depth images
     void featureMatching();
+
+    //Compute ICP to determine Transformation matrix between each consecutive pair of color+depth images. IF SVD checkbox is selected
+    //Pointclouds will be transformed on the same coordinate system using feature matching approach before ICP (ICP would do a final adjust)
+    //If SVD checkbox is not clicked, ICP will be used to transform the orignal pointclouds.
     void ICPAlign();
+
+    //Downsample all pointclouds and store it in a array.
     void Downsample();
 
+    //Merge all pointclouds using SVD + ICP transformations. Final Pointcloud will be downsampled to reduce data. Also, a radius outlier removal will be applyied.
     void MergePC();
 
 private:
@@ -144,8 +166,10 @@ private:
     PC_Algorithms pc_alg = PC_Algorithms();
     Kinect_RGBD_Grabber app;
     commonFunc imgProcessing;
+
+     Eigen::Matrix4f identity_matrix;
     /*****************************************************/
-    Eigen::Matrix4f identity_matrix;
+
 
 };
 

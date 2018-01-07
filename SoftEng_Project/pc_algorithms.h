@@ -64,13 +64,24 @@
 class PC_Algorithms
 {
 public:
+
+    //Constructor
     PC_Algorithms();
+
+    //Convert matches of keypoints to 3D pointclouds. Input takes 2 depth images (where depth will be extracted), a vector of matches and his corresondence vectors of Keypoints.
+    //The number of best matches must be introduced (we use to use 50).
     void keypoints_to_pc(const cv::Mat &depth_query, const cv::Mat &depth_train,std::vector< cv::DMatch > *matches, std::vector< cv::DMatch > *matches_output, std::vector<cv::KeyPoint> &keyPts_query,std::vector<cv::KeyPoint> &keyPts_train,int n_matches, pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud_query, pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud_train);
+
+    //Compute ICP Normal with 2 different pointclouds and return the transformation Marix obtained.
     Eigen::Matrix4f ICPNormal(pcl::PointCloud<pcl::PointXYZRGB>::Ptr src, pcl::PointCloud<pcl::PointXYZRGB>::Ptr tgt, float MaxDistance=0.1, float RansacVar = 0.01, float Iterations = 100);
 
+    //Compute SVD to obtain the transformation matrix between 2 sets of points (pointclouds). The idea is to solve a linear system y=Tx
     void LLS(Eigen::Matrix4f& transformation, pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud_in, pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud_out);
+
+    //Downsample a pointcloud
     void Downsampling(pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud, pcl::PointCloud<pcl::PointXYZRGB>::Ptr sampled_cloud, float sz = 0.05);
 
+    //Obtain a color mesh from a XYZRGB pointcloud
     void color_mesh(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,pcl::PolygonMesh& mesh);
 };
 

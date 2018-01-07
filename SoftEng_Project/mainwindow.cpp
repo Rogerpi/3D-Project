@@ -218,12 +218,12 @@ void MainWindow::on_PbtnLoad_clicked()
 
     MergePC();
 
-
-
     /************************************************/
 
 }
 
+
+//This button is used to TEST different stuff. This should be used to save images, but we changed it(after getting all datasets) to make easier for us to test
 void MainWindow::on_PbtnSave_clicked()
 {
     std::cout<<"Testing ICP"<<std::endl;
@@ -358,7 +358,7 @@ void MainWindow::on_PbtnSeePointCloud_clicked()
 {
 
     int i=ui->listWidget->currentRow();
-    pcl::visualization::PCLVisualizer match_viewer("Simple Match"), global_mesh_viewer("global mesh");
+    pcl::visualization::PCLVisualizer match_viewer("Simple Match");
 
     /* color one of the keyPts*/
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_kPt2_color, pointcloud_transposed (new pcl::PointCloud<pcl::PointXYZRGB> );
@@ -375,7 +375,6 @@ void MainWindow::on_PbtnSeePointCloud_clicked()
         cloud_kPt2_color->points[k].b = 0;
     }
     /******* - color keypoints ******/
-
 
     Eigen::Matrix4f RIicp, RIsvd;
     if(ui->svd_checkBox->isChecked())
@@ -400,14 +399,6 @@ void MainWindow::on_PbtnSeePointCloud_clicked()
     match_viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "keyPts2");
 
     match_viewer.spin();
-
-    pcl::PolygonMesh mesh;
-    pc_alg.color_mesh(pointclouds_d_sample[i],mesh);
-    std::cout<<"number of polygons"<<mesh.polygons.size()<<std::endl;
-    global_mesh_viewer.addPolygonMesh(mesh,"mesh");
-    global_mesh_viewer.setBackgroundColor (0, 0, 0);
-    global_mesh_viewer.spin();
-
 }
 
 

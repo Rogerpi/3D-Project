@@ -31,27 +31,37 @@ inline void SafeRelease(Interface*& ptr_int)
 class Kinect_RGBD_Grabber
 {
 public:
+    //Constructor
     Kinect_RGBD_Grabber();
 
+    //Destructor
     ~Kinect_RGBD_Grabber();
 
+    // Read depth frame from Kinect and return it as a cv::Mat
     cv::Mat GetDepthFrame();
 
+    // Read color frame from Kinect and return it as a cv::Mat
     cv::Mat GetColorFrame();
 
+    //Convert color image to depth space (same resolution and coordinate systems).  colorBytesPerPixel is 4 because images are received as RGBA
     cv::Mat map_depth_to_color(cv::Mat& depth_im, cv::Mat& rgb_im, int colorBytesPerPixel = 4);
 
 
 private:
 
+    //Init Kinect depth extractor
     void InitDepthSource();
 
+    //Init Kinect color extractor
     void InitColorSource();
 
+    //Init Kinect mapper to convert coordinate systems
     void InitMapper();
 
+    //This function will wait until depth frame is available (all data loaded in buffer)
     IDepthFrame* WaitForDepthFrame();
 
+    //This function will wait until color frame is available (all data loaded in buffer)
     IColorFrame* WaitForColorFrame();
 
 
